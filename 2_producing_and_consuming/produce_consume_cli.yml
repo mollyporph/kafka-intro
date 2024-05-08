@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  zoo:
+    extends:
+      service: zoo
+      file: ../shared/kafka.yml
+  kafka:
+    extends:
+      service: kafka
+      file: ../shared/kafka.yml
+  webui:
+    extends:
+      service: kafka-ui
+      file: ../shared/kafka.yml
+
+  init:
+    container_name: init-kafka
+    extends:
+      service: kafka-cli
+      file: ../shared/kafka.yml
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server ${KAFKA_BROKER} --list
+      
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server ${KAFKA_BROKER} --create --if-not-exists --topic my-topic --replication-factor 1 --partitions 1
+      echo -e 'Created following topics:'
+      kafka-topics --bootstrap-server ${KAFKA_BROKER} --list
+      
+      "
+
+  consumer:
+    container_name: kafka-consumer
+    extends:
+      service: kafka-cli
+      file: ../shared/kafka.yml
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    command: |
+      "
+      kafka-console-consumer --bootstrap-server ${KAFKA_BROKER} --topic my-topic --property "print.key=true"
+      "
