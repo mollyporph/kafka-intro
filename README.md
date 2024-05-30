@@ -13,7 +13,7 @@ Kafka is a distributed event streaming platform that can be used to build real-t
 Kafka is built around the concept of topics, which are logs of messages that are stored in a distributed manner across a cluster of servers. Producers write messages to topics and consumers read messages from topics. There can be any number (or zero) consumers and producers on a topic, which de-couples the producing and consuming systems from each other. 
 
 ### Kafka architecture
-[![Kafka architecture](images/kafka_plane.png)](images/kafka_plane.png)
+[![Kafka architecture](images/kafka_plane_1.png)](images/kafka_plane_1.png)
 
 Kafka supports multiple sources and sinks for data, including databases, message queues, custom services, and sensors. It can be used to build real-time data pipelines, stream processing applications, and event-driven architectures.
 
