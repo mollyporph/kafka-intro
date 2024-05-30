@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+    zoo1:
+        hostname: zoo1
+        container_name: zoo1
+        extends:
+            service: zoo
+            file: shared/kafka.yml
+    kafka1:
+        hostname: kafka1
+        container_name: kafka1
+        extends:
+            service: kafka
+            file: shared/kafka.yml
+        depends_on:
+        - zoo1
+    init:
+        container_name: init-kafka
+        extends:
+            service: kafka-cli
+            file: shared/kafka.yml
+        command: |
+            "
+            # blocks until kafka is reachable
+            kafka-topics --bootstrap-server kafka1:19092 --list
+
+            echo -e 'Creating kafka topics'
+            kafka-topics --bootstrap-server kafka1:19092 --create --if-not-exists --topic my-topic --replication-factor 1 --partitions 1
+            echo -e 'Created following topics:'
+            kafka-topics --bootstrap-server kafka1:19092 --list
+            "
+    consumer:
+        container_name: consumer
+        extends:
+            service: kafka-cli
+            file: shared/kafka.yml
+        depends_on:
+            init:
+                condition: service_completed_successfully
+        command: |
+            "
+            kafka-console-consumer --topic my-topic --bootstrap-server kafka1:19092  --property print.key=true --from-beginning
+            "
+    producer:
+        container_name: producer
+        extends:
+            service: connect
+            file: shared/kafka.yml
+        depends_on:
+            init:
+                condition: service_completed_successfully

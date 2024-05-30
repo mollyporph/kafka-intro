@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+    zoo1:
+        hostname: zoo1
+        container_name: zoo1
+        extends:
+            service: zoo
+            file: shared/kafka.yml
+    kafka1:
+        hostname: kafka1
+        container_name: kafka1
+        extends:
+            service: kafka
+            file: shared/kafka.yml
+        depends_on:
+        - zoo1
+    connect:
+        container_name: kafka-connect
+        extends:
+            service: connect
+            file: shared/kafka.yml
+        depends_on:
+            - kafka1
