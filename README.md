@@ -217,9 +217,23 @@ Of course manually producing messages to a topic is not very useful in a real-wo
 
 
 ### Partitions & Consumer groups
-coming soon
+Kafka topics are divided into partitions. Partitions are the unit of parallelism in Kafka, and each partition is an ordered, immutable sequence of messages. Each message in a partition is assigned a unique offset, which is a sequential number that identifies the message within the partition. The offset is used by consumers to keep track of which messages they have read and which messages they have not read yet.
+
+[![Kafka partitions](images/partitions_1.png)](images/partitions_1.png)
+
+When a message is produced to a topic, it is assigned to a partition based on a hash of the message key. This ensures that all messages with the same key are assigned to the same partition, which guarantees that they are processed in order.
+So if the above topic would have two partitions the messages would be distributed like this:
+
+[![Kafka partitions](images/partitions_2.png)](images/partitions_2.png)
+
+
+[![Kafka partitions](images/partitions_3.png)](images/partitions_3.png)
+
+This ensures that for any given key, the order of messages is preserved.
+
 ### Schema registry
-coming soon
+Schema Registry is a Confluent component to Kafka that provides schema validation of messages as well as serialization and deserialization support for different data formats, such as Avro and JSON. It allows producers and consumers to agree on a schema for the messages they exchange, which enables compatibility checks and evolution of the schema over time.
+Client libraries can request the latest version of a schema for a topic, validate and serialize a message and then send it to the Kafka broker. The schema-id gets embedded in the message value (and/or key) as a magic byte. So that the consumer can deserialize the message properly.
 ## Production deployments
 coming soon
 ### Security
